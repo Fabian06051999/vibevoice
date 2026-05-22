@@ -1,0 +1,122 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Vibe Voice Tool</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap"
+      rel="stylesheet"
+    />
+    <link rel="stylesheet" href="index.css" />
+  </head>
+  <body>
+    <div class="bg-mesh" aria-hidden="true"></div>
+
+    <div class="window">
+      <header class="topbar">
+        <div class="brand">
+          <div class="brand-logo-wrap">
+            <img class="brand-logo" src="assets/logo.svg" alt="Vibe Voice" />
+            <div class="brand-glow"></div>
+          </div>
+          <div>
+            <h1>Vibe Voice</h1>
+            <p>Voice-to-text for vibe coding</p>
+          </div>
+        </div>
+        <div class="status-pill" id="status-pill">
+          <span class="status-dot"></span>
+          <span class="status-text">Ready</span>
+        </div>
+      </header>
+
+      <main class="content">
+        <section class="card">
+          <div class="card-header">
+            <div class="card-icon">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round">
+                <rect x="3" y="11" width="18" height="11" rx="2" ry="2"/>
+                <path d="M7 11V7a5 5 0 0 1 10 0v4"/>
+              </svg>
+            </div>
+            <div>
+              <h2>API Key</h2>
+              <p>Groq Whisper transcription engine</p>
+            </div>
+          </div>
+          <div class="field-row">
+            <input id="api-key" type="password" placeholder="gsk_..." autocomplete="off" spellcheck="false" />
+            <button id="test-api-key" class="btn btn-ghost" type="button">Test</button>
+          </div>
+          <button id="get-api-key" class="api-link" type="button">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg>
+            Get your free API key at groq.com
+          </button>
+        </section>
+
+        <section class="card-grid">
+          <div class="card compact">
+            <label for="language">Speech language</label>
+            <select id="language">
+              <option value="auto">Auto-detect</option>
+              <option value="de">Deutsch</option>
+              <option value="en">English</option>
+              <option value="uk">Українська</option>
+              <option value="fr">Français</option>
+              <option value="es">Español</option>
+              <option value="it">Italiano</option>
+            </select>
+          </div>
+
+          <div class="card compact">
+            <label>Hotkey</label>
+            <div class="hotkey-row">
+              <kbd>Ctrl</kbd>
+              <span class="hotkey-plus">+</span>
+              <kbd>Win</kbd>
+            </div>
+            <p class="hint">Hold to record &middot; Double-tap to lock</p>
+          </div>
+        </section>
+
+        <section class="card tips">
+          <div class="tip">
+            <div class="tip-icon tip-icon--detect">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><circle cx="12" cy="12" r="10"/><path d="M12 6v6l4 2"/></svg>
+            </div>
+            <span>Auto-detects <strong>code</strong>, <strong>terminal</strong>, <strong>prompt</strong> or <strong>prose</strong></span>
+          </div>
+          <div class="tip">
+            <div class="tip-icon tip-icon--listen">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><path d="M12 1a3 3 0 0 0-3 3v8a3 3 0 0 0 6 0V4a3 3 0 0 0-3-3Z"/><path d="M19 10v2a7 7 0 0 1-14 0v-2"/><line x1="12" y1="19" x2="12" y2="23"/></svg>
+            </div>
+            <span>Listening indicator appears at the bottom of your screen</span>
+          </div>
+          <div class="tip">
+            <div class="tip-icon tip-icon--lock">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
+            </div>
+            <span>Double-tap <kbd>Ctrl+Win</kbd> for hands-free locked recording</span>
+          </div>
+        </section>
+      </main>
+
+      <footer class="footer">
+        <button id="save-config" class="btn btn-primary" type="button">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"/><polyline points="17 21 17 13 7 13 7 21"/><polyline points="7 3 7 8 15 8"/></svg>
+          Save settings
+        </button>
+      </footer>
+    </div>
+
+    <div class="toast" id="toast" aria-live="polite">
+      <svg class="toast-icon" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><path d="M20 6L9 17l-5-5"/></svg>
+      <span class="toast-text">Settings saved</span>
+    </div>
+
+    <script type="module" src="main.js"></script>
+  </body>
+</html>

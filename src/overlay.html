@@ -1,0 +1,26 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Listening</title>
+    <link rel="stylesheet" href="overlay.css" />
+  </head>
+  <body>
+    <div class="stage" id="stage">
+      <div class="pill">
+        <img class="logo" src="assets/logo.svg" alt="" />
+        <div class="waveform" aria-hidden="true">
+          <span></span>
+          <span></span>
+          <span></span>
+          <span></span>
+          <span></span>
+        </div>
+        <span class="status" id="status-text">Listening</span>
+        <span class="lock" id="lock-badge" hidden aria-hidden="true">🔒</span>
+      </div>
+    </div>
+    <script type="module" src="overlay.js"></script>
+  </body>
+</html>
