@@ -1,4 +1,3 @@
-use crate::context::{capture_recording_context, peek_recording_context};
 use crate::focus::capture_target_window;
 use serde::Serialize;
 use std::sync::atomic::{AtomicBool, AtomicIsize, AtomicU64, Ordering};
@@ -35,19 +34,7 @@ pub enum HotkeyAction {
 
 #[derive(Serialize, Clone)]
 struct RecordingStartPayload {
-    mode: String,
-    detail: String,
     locked: bool,
-}
-
-#[derive(Serialize, Clone)]
-struct RecordingLockedPayload {
-    mode: String,
-}
-
-#[derive(Serialize, Clone)]
-struct TranscribingPayload {
-    mode: String,
 }
 
 pub fn start_hotkey_listener(app: AppHandle, tx: Sender<HotkeyAction>) {
@@ -158,25 +145,14 @@ fn schedule_stop() {
 
 fn emit_recording_start(locked: bool) {
     if let Some(app) = APP_HANDLE.get() {
-        let context = peek_recording_context();
-        let payload = RecordingStartPayload {
-            mode: crate::context::mode_display(&context),
-            detail: context.language_hint.unwrap_or_default(),
-            locked,
-        };
+        let payload = RecordingStartPayload { locked };
         let _ = app.emit("recording-start", payload);
     }
 }
 
 fn emit_recording_locked() {
     if let Some(app) = APP_HANDLE.get() {
-        let context = peek_recording_context();
-        let _ = app.emit(
-            "recording-locked",
-            RecordingLockedPayload {
-                mode: crate::context::mode_display(&context),
-            },
-        );
+        let _ = app.emit("recording-locked", ());
     }
 }
 
@@ -186,7 +162,6 @@ fn begin_recording(locked: bool) {
     }
 
     capture_target_window();
-    capture_recording_context();
     emit_recording_start(locked);
 
     if let Some(tx) = ACTION_TX.get() {
@@ -203,14 +178,8 @@ fn finish_recording() {
     capture_target_window();
 
     if let Some(app) = APP_HANDLE.get() {
-        let context = peek_recording_context();
         let _ = app.emit("recording-stop", ());
-        let _ = app.emit(
-            "transcribing",
-            TranscribingPayload {
-                mode: crate::context::mode_display(&context),
-            },
-        );
+        let _ = app.emit("transcribing", ());
     }
 
     if let Some(tx) = ACTION_TX.get() {

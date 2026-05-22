@@ -1,11 +1,10 @@
-use crate::context;
 use std::sync::atomic::{AtomicIsize, Ordering};
 use windows::Win32::Foundation::HWND;
 use windows::Win32::System::Threading::{AttachThreadInput, GetCurrentThreadId};
 use windows::Win32::Foundation::RECT;
 use windows::Win32::UI::WindowsAndMessaging::{
-    GetForegroundWindow, GetWindowRect, GetWindowThreadProcessId, IsWindow, SetForegroundWindow,
-    ShowWindow, SW_SHOW,
+    GetClassNameW, GetForegroundWindow, GetWindowRect, GetWindowTextW, GetWindowThreadProcessId,
+    IsWindow, SetForegroundWindow, ShowWindow, SW_SHOW,
 };
 
 static TARGET_HWND: AtomicIsize = AtomicIsize::new(0);
@@ -35,8 +34,8 @@ pub fn inject_method_for_target() -> InjectMethod {
         return InjectMethod::CtrlVPaste;
     };
 
-    let class = context::window_class_name(hwnd);
-    let title = context::window_title(hwnd).to_lowercase();
+    let class = window_class_name(hwnd);
+    let title = window_title(hwnd).to_lowercase();
 
     if class == "CASCADIA_HOSTING_WINDOW_CLASS" || class == "ConsoleWindowClass" {
         return InjectMethod::ShiftInsertPaste;
@@ -105,6 +104,28 @@ fn target_hwnd() -> Option<HWND> {
         return None;
     }
     Some(HWND(raw as *mut _))
+}
+
+fn window_class_name(hwnd: HWND) -> String {
+    let mut buffer = [0u16; 256];
+    unsafe {
+        let length = GetClassNameW(hwnd, &mut buffer);
+        if length == 0 {
+            return String::new();
+        }
+        String::from_utf16_lossy(&buffer[..length as usize])
+    }
+}
+
+fn window_title(hwnd: HWND) -> String {
+    let mut buffer = [0u16; 512];
+    unsafe {
+        let length = GetWindowTextW(hwnd, &mut buffer);
+        if length == 0 {
+            return String::new();
+        }
+        String::from_utf16_lossy(&buffer[..length as usize])
+    }
 }
 
 unsafe fn is_same_process(a: HWND, b: HWND) -> bool {

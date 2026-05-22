@@ -7,7 +7,7 @@ const lockBadge = document.getElementById("lock-badge");
 function setLocked(locked) {
   stage.classList.toggle("locked", locked);
   lockBadge.hidden = !locked;
-  statusText.textContent = locked ? "Locked" : "Listening";
+  statusText.textContent = locked ? "Locked" : "Prompt";
 }
 
 function showRecording(event) {
@@ -32,7 +32,7 @@ function showTranscribing() {
 function hideOverlay() {
   stage.classList.remove("visible", "transcribing", "locked");
   lockBadge.hidden = true;
-  statusText.textContent = "Listening";
+  statusText.textContent = "Prompt";
 }
 
 listen("recording-start", showRecording);

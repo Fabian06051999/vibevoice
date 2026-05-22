@@ -1,7 +1,6 @@
 mod audio;
 mod clipboard;
 mod config;
-mod context;
 mod focus;
 mod format;
 mod hotkey;
@@ -9,7 +8,6 @@ mod transcription;
 
 use audio::AudioHandle;
 use config::{load_config, save_config, AppConfig};
-use context::take_recording_context;
 use format::format_transcript;
 use hotkey::{start_hotkey_listener, stop_hotkey_listener, HotkeyAction};
 use std::sync::{Arc, Mutex};
@@ -23,7 +21,7 @@ use tauri::{
 fn set_window_icon_native(hwnd_raw: isize) {
     use windows::Win32::Foundation::HWND;
     use windows::Win32::UI::WindowsAndMessaging::{
-        CreateIcon, SendMessageW, WM_SETICON, ICON_BIG, ICON_SMALL,
+        CreateIcon, SendMessageW, WM_SETICON,
     };
 
     let rgba = include_bytes!("../icons/window-48.rgba");
@@ -150,18 +148,11 @@ async fn process_recording(app: AppHandle) {
         return;
     }
 
-    let recording_context = take_recording_context();
-
-    match transcription::transcribe(
-        wav_data,
-        &config.language,
-        &config.api_key,
-        &recording_context,
-    )
+    match transcription::transcribe(wav_data, &config.language, &config.api_key)
     .await
     {
         Ok(text) => {
-            let text = format_transcript(&text, &recording_context);
+            let text = format_transcript(&text);
             if transcription::should_insert_transcript(&text, duration_ms, rms) {
                 hide_overlay(&app);
 
@@ -221,7 +212,7 @@ pub fn run() {
                 tauri::image::Image::new_owned(rgba.to_vec(), 128, 128)
             };
 
-            let mut tray_builder = TrayIconBuilder::new()
+            let tray_builder = TrayIconBuilder::new()
                 .menu(&menu)
                 .tooltip("Vibe Voice Tool")
                 .icon(tray_icon);

@@ -1,65 +1,48 @@
-use crate::context::{RecordingContext, VibeMode};
 use reqwest::multipart;
 
-pub fn whisper_prompt(context: &RecordingContext) -> String {
-    let mut terms = match context.mode {
-        VibeMode::Code => vec![
-            "useEffect",
-            "useState",
-            "useRef",
-            "async",
-            "await",
-            "function",
-            "const",
-            "let",
-            "interface",
-            "type",
-            "return",
-            "import",
-            "export",
-            "React",
-            "TypeScript",
-            "JavaScript",
-            "Tauri",
-            "Rust",
-            "Cursor",
-        ],
-        VibeMode::Terminal => vec![
-            "git",
-            "npm",
-            "pnpm",
-            "yarn",
-            "cargo",
-            "docker",
-            "cd",
-            "ls",
-            "mkdir",
-            "powershell",
-            "bash",
-            "terminal",
-            "grep",
-            "curl",
-        ],
-        VibeMode::Prompt => vec![
-            "Cursor",
-            "refactor",
-            "implement",
-            "fix",
-            "bug",
-            "explain",
-            "add tests",
-            "composer",
-            "agent",
-            "prompt",
-        ],
-        VibeMode::Prose => vec![],
-    };
+pub fn whisper_prompt() -> String {
+    const TERMS: &[&str] = &[
+        "Cursor",
+        "Composer",
+        "agent",
+        "prompt",
+        "vibe coding",
+        "refactor",
+        "implement",
+        "fix",
+        "debug",
+        "bug",
+        "explain",
+        "optimize",
+        "clean up",
+        "add tests",
+        "unit tests",
+        "integration tests",
+        "component",
+        "hook",
+        "state",
+        "props",
+        "API",
+        "database",
+        "schema",
+        "migration",
+        "TypeScript",
+        "JavaScript",
+        "React",
+        "Next.js",
+        "Tailwind",
+        "Tauri",
+        "Rust",
+        "Node.js",
+        "frontend",
+        "backend",
+        "terminal",
+        "PowerShell",
+        "GitHub",
+        "README",
+    ];
 
-    if let Some(language) = &context.language_hint {
-        terms.push(language.as_str());
-    }
-
-    terms.join(", ")
+    TERMS.join(", ")
 }
 
 pub fn is_hallucination(text: &str) -> bool {
@@ -147,7 +130,6 @@ pub async fn transcribe(
     audio_data: Vec<u8>,
     language: &str,
     api_key: &str,
-    context: &RecordingContext,
 ) -> Result<String, String> {
     let client = reqwest::Client::builder()
         .timeout(std::time::Duration::from_secs(30))
@@ -169,7 +151,7 @@ pub async fn transcribe(
         form = form.text("language", language.to_string());
     }
 
-    let prompt = whisper_prompt(context);
+    let prompt = whisper_prompt();
     if !prompt.is_empty() {
         form = form.text("prompt", prompt);
     }

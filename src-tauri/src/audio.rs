@@ -45,12 +45,10 @@ impl Recorder {
         }
     }
 
-    fn start_recording(&mut self) -> Result<(), String> {
-        if self.recording.load(Ordering::SeqCst) {
+    fn prepare_stream(&mut self) -> Result<(), String> {
+        if self.stream.is_some() {
             return Ok(());
         }
-
-        self.samples.lock().unwrap().clear();
 
         let host = cpal::default_host();
         let device = host
@@ -116,14 +114,23 @@ impl Recorder {
         };
 
         stream.play().map_err(|e| e.to_string())?;
-        self.recording.store(true, Ordering::SeqCst);
         self.stream = Some(stream);
+        Ok(())
+    }
+
+    fn start_recording(&mut self) -> Result<(), String> {
+        if self.recording.load(Ordering::SeqCst) {
+            return Ok(());
+        }
+
+        self.prepare_stream()?;
+        self.samples.lock().unwrap().clear();
+        self.recording.store(true, Ordering::SeqCst);
         Ok(())
     }
 
     fn stop_recording(&mut self) -> Result<RecordingResult, String> {
         self.recording.store(false, Ordering::SeqCst);
-        self.stream = None;
 
         let samples = self.samples.lock().unwrap().clone();
         let (duration_ms, rms) = analyze_samples(&samples, self.sample_rate);
@@ -147,6 +154,9 @@ impl AudioHandle {
 
         thread::spawn(move || {
             let mut recorder = Recorder::new();
+            if let Err(error) = recorder.prepare_stream() {
+                eprintln!("Audio prewarm failed: {error}");
+            }
             while let Ok(command) = command_rx.recv() {
                 match command {
                     AudioCommand::Start { reply } => {

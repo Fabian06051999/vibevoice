@@ -1,10 +1,10 @@
 # <img src="src/assets/logo.svg" width="32" height="32" alt="logo" /> Vibe Voice
 
-### Talk to your code. Literally.
+### Talk to your AI coding agent. Literally.
 
-**Vibe Voice** is a push-to-talk voice-to-text tool built for the age of vibe coding. Hold a hotkey, speak naturally, and watch your words appear exactly where your cursor is — whether you're writing code, running terminal commands, or prompting an AI agent.
+**Vibe Voice** is a prompt-first voice-to-text tool built for vibe coding. Hold a hotkey, speak your next instruction, and watch it appear exactly where your cursor is — ready for Cursor, Composer, ChatGPT, Claude, or any AI coding workflow.
 
-It knows the difference.
+No modes. No context guessing. Just fast, accurate prompts.
 
 ![Windows](https://img.shields.io/badge/platform-Windows_10%2F11-0078D4?logo=windows&logoColor=white)
 ![Tauri 2](https://img.shields.io/badge/built_with-Tauri_2.0-7C3AED?logo=tauri&logoColor=white)
@@ -15,16 +15,17 @@ It knows the difference.
 
 ## Why Vibe Voice?
 
-Every vibe coder knows the pain: you're in the zone, your AI agent is building your app, and you need to type the next instruction — but typing breaks your flow. Voice input tools exist, but they don't understand code. They don't know that "use effect open paren" should become `useEffect(`.
+Every vibe coder knows the pain: you're in the zone, your AI agent is building your app, and you need to type the next instruction — but typing breaks your flow.
 
-**Vibe Voice does.**
+**Vibe Voice keeps the loop moving.**
 
-- You say *"arrow"* → it types `=>`
-- You say *"geschweifte klammer auf"* → it types `{`
-- You say *"git status pipe grep main"* → it types `git status | grep main`
-- You say *"Refactor this component to use a custom hook"* → it types exactly that
+- You think of the next change
+- You hold `Ctrl+Win`
+- You say the prompt out loud
+- Vibe Voice inserts clean text at your cursor
+- Your AI agent keeps working
 
-No training. No configuration. Just hold `Ctrl+Win` and speak.
+It is intentionally simple: **speech in, prompt out**.
 
 ---
 
@@ -35,8 +36,8 @@ No training. No configuration. Just hold `Ctrl+Win` and speak.
 | **🎙** | **Push-to-talk** | Hold `Ctrl+Win` to record, release to transcribe and paste |
 | **🔒** | **Locked mode** | Double-tap `Ctrl+Win` for hands-free recording, tap again to stop |
 | **🌍** | **Auto language** | Whisper auto-detects your spoken language — or pin one manually |
-| **🎯** | **Context-aware** | Detects code editor, terminal, AI prompt, or prose — formats accordingly |
-| **⚡** | **Symbol dictation** | Say "open brace", "arrow", "use effect" → get `{`, `=>`, `useEffect` |
+| **🎯** | **Prompt-first** | Optimized for AI-agent instructions instead of brittle app detection |
+| **⚡** | **Vibe coding vocabulary** | Whisper is primed with Cursor, Composer, agents, refactors, tests and common dev terms |
 | **🧹** | **Hallucination filter** | Suppresses phantom transcriptions on silence |
 | **💊** | **Minimal overlay** | Tiny listening pill at the bottom of your screen — never in the way |
 | **🔇** | **System tray** | Lives silently in the tray, zero distractions |
@@ -55,46 +56,28 @@ Under the hood:
 1. A low-level keyboard hook captures `Ctrl+Win` globally (works in any app)
 2. Your focused window is saved before recording starts
 3. Audio is captured from your default microphone
-4. The context is detected — are you in a code editor? terminal? AI chat?
-5. Audio is sent to Groq's Whisper API for near-instant transcription
-6. The transcript is formatted based on context (symbol replacement in code mode, raw text in prose mode)
-7. Focus is restored to your original window and the text is injected
+4. Audio is sent to Groq's Whisper API with a vibe-coding prompt vocabulary
+5. The transcript is cleaned up as natural prompt text
+6. Focus is restored to your original window and the text is injected
 
 The entire pipeline typically completes in **under 2 seconds**.
 
 ---
 
-## Context detection
+## Prompt-first by design
 
-Vibe Voice reads your active window and adjusts its behavior automatically:
+Vibe Voice deliberately does **not** try to convert your speech into code syntax. That sounds clever, but for vibe coding it often gets in the way.
 
-| Context | Detected when | What happens |
-|---|---|---|
-| **Code** | Cursor / VS Code with a source file open | Symbols are replaced, camelCase presets applied |
-| **Terminal** | Windows Terminal, integrated terminal | Pipe, slash, and command symbols recognized |
-| **Prompt** | Cursor Composer / AI Chat | Natural language preserved as-is |
-| **Prose** | Any other text field | Natural language preserved as-is |
+Instead, it optimizes for the thing you actually do all day: giving precise instructions to an AI coding agent.
 
----
+Examples:
 
-## Symbol dictation
-
-In Code and Terminal mode, spoken words are intelligently replaced:
-
-| You say | You get |
+| You say | Vibe Voice inserts |
 |---|---|
-| "open paren" / "klammer auf" | `(` |
-| "open brace" / "geschweifte klammer auf" | `{` |
-| "arrow" / "pfeil" | `=>` |
-| "triple equals" | `===` |
-| "double colon" / "doppelpunkt doppelpunkt" | `::` |
-| "pipe" | `\|` |
-| "use effect" | `useEffect` |
-| "use state" | `useState` |
-| "console log" | `console.log` |
-| "new line" / "neue zeile" | ↵ newline |
-
-Works in both **English** and **German** — more languages coming.
+| “Refactor this component so the state logic lives in a custom hook and add tests.” | Refactor this component so the state logic lives in a custom hook and add tests. |
+| “Explain why this TypeScript error happens and suggest the smallest safe fix.” | Explain why this TypeScript error happens and suggest the smallest safe fix. |
+| “Update the README so the setup instructions are clearer for Windows users.” | Update the README so the setup instructions are clearer for Windows users. |
+| “Find the bug in the save flow and fix it without changing unrelated behavior.” | Find the bug in the save flow and fix it without changing unrelated behavior. |
 
 ---
 
@@ -105,7 +88,7 @@ Works in both **English** and **German** — more languages coming.
 - **Windows 10 or 11**
 - **Rust** — install via [rustup.rs](https://rustup.rs/)
 - **Node.js 18+** — for the Tauri CLI
-- **Groq API key** — free at [console.groq.com/keys](https://console.groq.com/keys)
+- **Your own Groq API key** — Vibe Voice does not include an API key. Create a free key at [console.groq.com/keys](https://console.groq.com/keys) and paste it into Settings.
 
 ### Build & run
 
@@ -122,7 +105,7 @@ Then run `src-tauri/target/release/vibe-voice-tool.exe`.
 
 1. The app starts in the **system tray** (bottom-right)
 2. Right-click the tray icon → **Settings**
-3. Paste your **Groq API key** (or click the link to get one free)
+3. Paste your **own Groq API key** (or click the link to get one free)
 4. Leave language on **Auto-detect** or pick one
 5. **Save settings** — you'll see a confirmation toast
 6. Hold `Ctrl+Win` and start talking
@@ -173,8 +156,7 @@ vibevoice/
 │   │   ├── hotkey.rs             # Global hotkey + locked mode
 │   │   ├── focus.rs              # Focus capture/restore
 │   │   ├── clipboard.rs          # Text injection methods
-│   │   ├── context.rs            # Vibe mode detection
-│   │   ├── format.rs             # Symbol map + code presets
+│   │   ├── format.rs             # Prompt cleanup
 │   │   └── config.rs             # Config persistence
 │   ├── icons/                    # App, tray & window icons
 │   ├── Cargo.toml
@@ -197,16 +179,18 @@ Settings are stored in `%APPDATA%\vibe-voice-tool\config.json` — never in the 
 }
 ```
 
+You must bring your own Groq API key. The app never ships with one, and your saved key stays local on your machine.
+
 ---
 
 ## Roadmap
 
 - [ ] Release binary downloads (no build required)
 - [ ] Custom hotkey configuration
-- [ ] Per-project voice profiles (`.vibe-voice.json`)
 - [ ] LLM post-processing for smarter prompt formatting
+- [ ] Optional prompt templates for Cursor/Composer workflows
 - [ ] macOS & Linux support
-- [ ] More language symbol maps
+- [ ] More prompt vocabulary presets
 
 ---
 
