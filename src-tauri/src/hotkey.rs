@@ -45,14 +45,14 @@ pub fn start_hotkey_listener(app: AppHandle, tx: Sender<HotkeyAction>) {
     }
 
     thread::spawn(|| unsafe {
-        let hook = match SetWindowsHookExW(WH_KEYBOARD_LL, Some(keyboard_proc), HINSTANCE::default(), 0)
-        {
-            Ok(hook) => hook,
-            Err(error) => {
-                eprintln!("Failed to install keyboard hook: {error}");
-                return;
-            }
-        };
+        let hook =
+            match SetWindowsHookExW(WH_KEYBOARD_LL, Some(keyboard_proc), HINSTANCE::default(), 0) {
+                Ok(hook) => hook,
+                Err(error) => {
+                    eprintln!("Failed to install keyboard hook: {error}");
+                    return;
+                }
+            };
 
         HOOK_HANDLE.store(hook.0 as isize, Ordering::SeqCst);
 
@@ -83,12 +83,10 @@ unsafe extern "system" fn keyboard_proc(code: i32, wparam: WPARAM, lparam: LPARA
 
     let keyboard = *(lparam.0 as *const KBDLLHOOKSTRUCT);
     let virtual_key = keyboard.vkCode;
-    let is_key_down =
-        wparam.0 == WM_KEYDOWN as usize || wparam.0 == WM_SYSKEYDOWN as usize;
+    let is_key_down = wparam.0 == WM_KEYDOWN as usize || wparam.0 == WM_SYSKEYDOWN as usize;
     let is_key_up = wparam.0 == WM_KEYUP as usize || wparam.0 == WM_SYSKEYUP as usize;
 
-    let is_ctrl =
-        virtual_key == VK_LCONTROL.0 as u32 || virtual_key == VK_RCONTROL.0 as u32;
+    let is_ctrl = virtual_key == VK_LCONTROL.0 as u32 || virtual_key == VK_RCONTROL.0 as u32;
     let is_win = virtual_key == VK_LWIN.0 as u32 || virtual_key == VK_RWIN.0 as u32;
 
     if is_ctrl {

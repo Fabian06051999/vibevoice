@@ -8,8 +8,12 @@ use std::sync::{Arc, Mutex};
 use std::thread;
 
 enum AudioCommand {
-    Start { reply: Sender<Result<(), String>> },
-    Stop { reply: Sender<Result<RecordingResult, String>> },
+    Start {
+        reply: Sender<Result<(), String>>,
+    },
+    Stop {
+        reply: Sender<Result<RecordingResult, String>>,
+    },
 }
 
 #[derive(Debug, Clone)]

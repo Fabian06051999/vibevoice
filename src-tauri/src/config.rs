@@ -7,6 +7,8 @@ pub struct AppConfig {
     pub api_key: String,
     pub language: String,
     pub hotkey: String,
+    #[serde(default)]
+    pub autostart: bool,
 }
 
 impl Default for AppConfig {
@@ -15,6 +17,7 @@ impl Default for AppConfig {
             api_key: String::new(),
             language: "auto".to_string(),
             hotkey: "Ctrl+Win".to_string(),
+            autostart: false,
         }
     }
 }

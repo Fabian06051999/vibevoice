@@ -1,6 +1,6 @@
 [package]
 name = "vibe-voice-tool"
-version = "0.1.0"
+version = "0.1.1"
 description = "Voice-to-text push-to-talk tool for Vibe Coder"
 authors = ["you"]
 edition = "2021"
@@ -28,3 +28,6 @@ arboard = "3"
 serde = { version = "1", features = ["derive"] }
 serde_json = "1"
 tokio = { version = "1", features = ["rt-multi-thread", "macros"] }
+
+[target.'cfg(not(any(target_os = "android", target_os = "ios")))'.dependencies]
+tauri-plugin-autostart = "2"

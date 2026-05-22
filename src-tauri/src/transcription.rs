@@ -115,8 +115,8 @@ pub fn should_insert_transcript(text: &str, duration_ms: u32, rms: f32) -> bool 
         return false;
     }
 
-    let has_speech = duration_ms >= crate::audio::MIN_SPEECH_DURATION_MS
-        && rms >= crate::audio::MIN_SPEECH_RMS;
+    let has_speech =
+        duration_ms >= crate::audio::MIN_SPEECH_DURATION_MS && rms >= crate::audio::MIN_SPEECH_RMS;
 
     // Whisper often hallucinates short polite phrases on near-silent audio.
     if normalized.len() <= 24 && !has_speech {

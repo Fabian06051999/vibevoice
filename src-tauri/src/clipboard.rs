@@ -75,7 +75,10 @@ fn push_unicode_char(inputs: &mut Vec<INPUT>, ch: char) {
     }
 }
 
-fn unicode_event(unit: u16, flags: windows::Win32::UI::Input::KeyboardAndMouse::KEYBD_EVENT_FLAGS) -> INPUT {
+fn unicode_event(
+    unit: u16,
+    flags: windows::Win32::UI::Input::KeyboardAndMouse::KEYBD_EVENT_FLAGS,
+) -> INPUT {
     INPUT {
         r#type: INPUT_KEYBOARD,
         Anonymous: INPUT_0 {

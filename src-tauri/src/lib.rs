@@ -16,13 +16,12 @@ use tauri::{
     tray::TrayIconBuilder,
     AppHandle, Emitter, Listener, Manager, RunEvent, State, WebviewWindow,
 };
+use tauri_plugin_autostart::ManagerExt;
 
 #[cfg(windows)]
 fn set_window_icon_native(hwnd_raw: isize) {
     use windows::Win32::Foundation::HWND;
-    use windows::Win32::UI::WindowsAndMessaging::{
-        CreateIcon, SendMessageW, WM_SETICON,
-    };
+    use windows::Win32::UI::WindowsAndMessaging::{CreateIcon, SendMessageW, WM_SETICON};
 
     let rgba = include_bytes!("../icons/window-48.rgba");
     let width: u32 = 48;
@@ -47,8 +46,18 @@ fn set_window_icon_native(hwnd_raw: isize) {
         );
         if let Ok(icon) = hicon {
             let hwnd = HWND(hwnd_raw as *mut _);
-            SendMessageW(hwnd, WM_SETICON, windows::Win32::Foundation::WPARAM(1), windows::Win32::Foundation::LPARAM(icon.0 as isize));
-            SendMessageW(hwnd, WM_SETICON, windows::Win32::Foundation::WPARAM(0), windows::Win32::Foundation::LPARAM(icon.0 as isize));
+            SendMessageW(
+                hwnd,
+                WM_SETICON,
+                windows::Win32::Foundation::WPARAM(1),
+                windows::Win32::Foundation::LPARAM(icon.0 as isize),
+            );
+            SendMessageW(
+                hwnd,
+                WM_SETICON,
+                windows::Win32::Foundation::WPARAM(0),
+                windows::Win32::Foundation::LPARAM(icon.0 as isize),
+            );
         }
     }
 }
@@ -58,13 +67,27 @@ struct AppState {
     audio: AudioHandle,
 }
 
+fn apply_autostart(app: &AppHandle, enabled: bool) -> Result<(), String> {
+    let autolaunch = app.autolaunch();
+    if enabled {
+        autolaunch.enable().map_err(|e| e.to_string())
+    } else {
+        autolaunch.disable().map_err(|e| e.to_string())
+    }
+}
+
 #[tauri::command]
 fn get_config(state: State<'_, AppState>) -> AppConfig {
     state.config.lock().unwrap().clone()
 }
 
 #[tauri::command]
-fn save_config_cmd(config: AppConfig, state: State<'_, AppState>) -> Result<(), String> {
+fn save_config_cmd(
+    config: AppConfig,
+    app: AppHandle,
+    state: State<'_, AppState>,
+) -> Result<(), String> {
+    apply_autostart(&app, config.autostart)?;
     save_config(&config)?;
     *state.config.lock().unwrap() = config;
     Ok(())
@@ -86,9 +109,7 @@ fn open_url(url: String) -> Result<(), String> {
 
 fn position_overlay(overlay: &WebviewWindow, app: &AppHandle) {
     let monitor = if let Some((x, y)) = focus::target_monitor_center() {
-        app.monitor_from_point(x as f64, y as f64)
-            .ok()
-            .flatten()
+        app.monitor_from_point(x as f64, y as f64).ok().flatten()
     } else {
         None
     }
@@ -148,9 +169,7 @@ async fn process_recording(app: AppHandle) {
         return;
     }
 
-    match transcription::transcribe(wav_data, &config.language, &config.api_key)
-    .await
-    {
+    match transcription::transcribe(wav_data, &config.language, &config.api_key).await {
         Ok(text) => {
             let text = format_transcript(&text);
             if transcription::should_insert_transcript(&text, duration_ms, rms) {
@@ -181,11 +200,21 @@ pub fn run() {
     let (action_tx, action_rx) = std::sync::mpsc::channel::<HotkeyAction>();
 
     tauri::Builder::default()
+        .plugin(
+            tauri_plugin_autostart::Builder::new()
+                .app_name("Vibe Voice Tool")
+                .build(),
+        )
         .manage(AppState {
             config: Arc::new(Mutex::new(load_config())),
             audio: AudioHandle::spawn(),
         })
         .setup(move |app| {
+            let autostart = app.state::<AppState>().config.lock().unwrap().autostart;
+            if let Err(error) = apply_autostart(app.handle(), autostart) {
+                eprintln!("Failed to apply autostart setting: {error}");
+            }
+
             #[cfg(windows)]
             if let Some(main_win) = app.get_webview_window("main") {
                 if let Ok(hwnd) = main_win.hwnd() {
@@ -202,8 +231,7 @@ pub fn run() {
                 }
             }
 
-            let settings_item =
-                MenuItem::with_id(app, "settings", "Settings", true, None::<&str>)?;
+            let settings_item = MenuItem::with_id(app, "settings", "Settings", true, None::<&str>)?;
             let quit_item = MenuItem::with_id(app, "quit", "Quit", true, None::<&str>)?;
             let menu = Menu::with_items(app, &[&settings_item, &quit_item])?;
 
@@ -269,7 +297,12 @@ pub fn run() {
                 let _ = window.hide();
             }
         })
-        .invoke_handler(tauri::generate_handler![get_config, save_config_cmd, test_api_key, open_url])
+        .invoke_handler(tauri::generate_handler![
+            get_config,
+            save_config_cmd,
+            test_api_key,
+            open_url
+        ])
         .build(tauri::generate_context!())
         .expect("error while running tauri application")
         .run(|_app_handle, event| {

@@ -2,6 +2,7 @@ const { invoke } = window.__TAURI__.core;
 
 const apiKeyInput = document.getElementById("api-key");
 const languageSelect = document.getElementById("language");
+const autostartInput = document.getElementById("autostart");
 const statusPill = document.getElementById("status-pill");
 const statusText = statusPill.querySelector(".status-text");
 const saveButton = document.getElementById("save-config");
@@ -26,6 +27,7 @@ function showToast(message) {
 function populateForm(config) {
   apiKeyInput.value = config.api_key ?? "";
   languageSelect.value = config.language ?? "auto";
+  autostartInput.checked = Boolean(config.autostart);
 }
 
 async function loadConfig() {
@@ -43,6 +45,7 @@ saveButton.addEventListener("click", async () => {
     api_key: apiKeyInput.value.trim(),
     language: languageSelect.value,
     hotkey: "Ctrl+Win",
+    autostart: autostartInput.checked,
   };
 
   try {

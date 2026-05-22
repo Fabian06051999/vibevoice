@@ -1,7 +1,7 @@
 use std::sync::atomic::{AtomicIsize, Ordering};
 use windows::Win32::Foundation::HWND;
-use windows::Win32::System::Threading::{AttachThreadInput, GetCurrentThreadId};
 use windows::Win32::Foundation::RECT;
+use windows::Win32::System::Threading::{AttachThreadInput, GetCurrentThreadId};
 use windows::Win32::UI::WindowsAndMessaging::{
     GetClassNameW, GetForegroundWindow, GetWindowRect, GetWindowTextW, GetWindowThreadProcessId,
     IsWindow, SetForegroundWindow, ShowWindow, SW_SHOW,
@@ -42,7 +42,10 @@ pub fn inject_method_for_target() -> InjectMethod {
     }
 
     if class == "Chrome_WidgetWin_1" {
-        if title.contains("cursor") || title.contains("visual studio code") || title.contains("code") {
+        if title.contains("cursor")
+            || title.contains("visual studio code")
+            || title.contains("code")
+        {
             return InjectMethod::UnicodeType;
         }
         return InjectMethod::CtrlVPaste;
