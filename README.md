@@ -6,6 +6,8 @@
 
 No modes. No context guessing. Just fast, accurate prompts.
 
+[![Vibe Voice — free voice-to-text for vibe coding on Windows](src/assets/promo-banner.png)](https://github.com/Fabian06051999/vibevoice/releases)
+
 ![Windows](https://img.shields.io/badge/platform-Windows_10%2F11-0078D4?logo=windows&logoColor=white)
 ![Tauri 2](https://img.shields.io/badge/built_with-Tauri_2.0-7C3AED?logo=tauri&logoColor=white)
 ![Groq](https://img.shields.io/badge/powered_by-Groq_Whisper-F55036)
