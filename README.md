@@ -47,7 +47,7 @@ No training. No configuration. Just hold `Ctrl+Win` and speak.
 ## How it works
 
 ```
-Ctrl+Win (hold) → microphone records → release → Groq Whisper API → text injected at cursor
+Ctrl+Win (hold) → microphone records → release → Groq Whisper API → text injected
 ```
 
 Under the hood:
