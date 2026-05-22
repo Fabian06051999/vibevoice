@@ -41,13 +41,28 @@
   },
   "bundle": {
     "active": true,
-    "targets": "all",
+    "targets": ["msi"],
+    "category": "Productivity",
+    "copyright": "Copyright © 2026 Fabian Kowalewski",
+    "homepage": "https://github.com/Fabian06051999/vibevoice",
+    "shortDescription": "Voice-to-text for AI coding prompts",
+    "longDescription": "Vibe Voice is a push-to-talk voice-to-text tool built for vibe coding. Hold Ctrl+Win, speak your instruction, and paste it at your cursor.",
     "icon": [
       "icons/32x32.png",
       "icons/128x128.png",
       "icons/128x128@2x.png",
       "icons/icon.icns",
       "icons/icon.ico"
-    ]
+    ],
+    "windows": {
+      "webviewInstallMode": {
+        "type": "downloadBootstrapper",
+        "silent": true
+      },
+      "wix": {
+        "upgradeCode": "ee26d992-14c4-5b52-81bf-1b663ee1c685",
+        "language": ["en-US", "de-DE"]
+      }
+    }
   }
 }

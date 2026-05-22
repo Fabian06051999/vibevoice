@@ -81,25 +81,26 @@ Examples:
 
 ---
 
-## Quick start
+## Install (Windows)
 
-### Prerequisites
+### What you need
 
 - **Windows 10 or 11**
-- **Rust** — install via [rustup.rs](https://rustup.rs/)
-- **Node.js 18+** — for the Tauri CLI
 - **Your own Groq API key** — Vibe Voice does not include an API key. Create a free key at [console.groq.com/keys](https://console.groq.com/keys) and paste it into Settings.
 
-### Build & run
+### Download & install
 
-```bash
-git clone https://github.com/Fabian06051999/vibevoice.git
-cd vibevoice
-npm install
-npm run build
-```
+1. Go to [**Releases**](https://github.com/Fabian06051999/vibevoice/releases) and download the MSI for your language:
+   - English: `Vibe Voice Tool_*_x64_en-US.msi`
+   - German: `Vibe Voice Tool_*_x64_de-DE.msi`
+2. Double-click the `.msi` file — Windows opens the familiar installer wizard:
+   - Welcome screen
+   - Choose install folder
+   - Install progress (WebView2 is downloaded automatically if needed)
+   - Finish — optional launch from the wizard
+3. Vibe Voice appears in the **Start menu** and runs in the **system tray**
 
-Then run `src-tauri/target/release/vibe-voice-tool.exe`.
+To uninstall later: **Settings → Apps → Installed apps → Vibe Voice Tool → Uninstall**.
 
 ### First launch
 
@@ -109,6 +110,37 @@ Then run `src-tauri/target/release/vibe-voice-tool.exe`.
 4. Leave language on **Auto-detect** or pick one
 5. **Save settings** — you'll see a confirmation toast
 6. Hold `Ctrl+Win` and start talking
+
+---
+
+## Build from source
+
+For developers who want to run or build the app locally:
+
+### Prerequisites
+
+- **Windows 10 or 11**
+- **Rust** — [rustup.rs](https://rustup.rs/)
+- **Node.js 18+**
+
+### Build & run
+
+```bash
+git clone https://github.com/Fabian06051999/vibevoice.git
+cd vibevoice
+npm install
+npm run dev
+```
+
+### Build the Windows MSI locally
+
+```bash
+npm run build:installer
+```
+
+The MSI file is created at:
+
+`src-tauri/target/release/bundle/msi/Vibe Voice Tool_*_x64_en-US.msi`
 
 ---
 
@@ -180,17 +212,6 @@ Settings are stored in `%APPDATA%\vibe-voice-tool\config.json` — never in the 
 ```
 
 You must bring your own Groq API key. The app never ships with one, and your saved key stays local on your machine.
-
----
-
-## Roadmap
-
-- [ ] Release binary downloads (no build required)
-- [ ] Custom hotkey configuration
-- [ ] LLM post-processing for smarter prompt formatting
-- [ ] Optional prompt templates for Cursor/Composer workflows
-- [ ] macOS & Linux support
-- [ ] More prompt vocabulary presets
 
 ---
 
