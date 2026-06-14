@@ -1,4 +1,5 @@
 use reqwest::multipart;
+use serde::{Deserialize, Serialize};
 
 pub fn whisper_prompt() -> String {
     const TERMS: &[&str] = &[
@@ -126,6 +127,100 @@ pub fn should_insert_transcript(text: &str, duration_ms: u32, rms: f32) -> bool 
     true
 }
 
+pub fn is_translate_language(language: &str) -> bool {
+    matches!(
+        language.trim().to_lowercase().as_str(),
+        "de-en" | "de_en" | "de->en" | "translate"
+    )
+}
+
+pub async fn translate(audio_data: Vec<u8>, api_key: &str) -> Result<String, String> {
+    let german_text = transcribe(audio_data, "de", api_key).await?;
+    translate_text_to_english(&german_text, api_key).await
+}
+
+async fn translate_text_to_english(text: &str, api_key: &str) -> Result<String, String> {
+    let text = text.trim();
+    if text.is_empty() {
+        return Ok(String::new());
+    }
+
+    let client = reqwest::Client::builder()
+        .timeout(std::time::Duration::from_secs(30))
+        .build()
+        .map_err(|e| e.to_string())?;
+
+    let request = ChatCompletionRequest {
+        model: "llama-3.1-8b-instant",
+        temperature: 0.0,
+        max_tokens: 1024,
+        messages: vec![
+            ChatMessage {
+                role: "system",
+                content: "Translate German developer instructions into natural, concise English. Return only the translated text.",
+            },
+            ChatMessage {
+                role: "user",
+                content: text,
+            },
+        ],
+    };
+
+    let response = client
+        .post("https://api.groq.com/openai/v1/chat/completions")
+        .bearer_auth(api_key)
+        .json(&request)
+        .send()
+        .await
+        .map_err(|e| e.to_string())?;
+
+    if !response.status().is_success() {
+        let status = response.status();
+        let body = response.text().await.unwrap_or_default();
+        return Err(format!("Groq API error {status}: {body}"));
+    }
+
+    let body = response
+        .json::<ChatCompletionResponse>()
+        .await
+        .map_err(|e| e.to_string())?;
+
+    body.choices
+        .first()
+        .map(|choice| choice.message.content.trim().to_string())
+        .filter(|text| !text.is_empty())
+        .ok_or_else(|| "Groq translation returned no text".to_string())
+}
+
+#[derive(Serialize)]
+struct ChatCompletionRequest<'a> {
+    model: &'a str,
+    messages: Vec<ChatMessage<'a>>,
+    temperature: f32,
+    max_tokens: u32,
+}
+
+#[derive(Serialize)]
+struct ChatMessage<'a> {
+    role: &'a str,
+    content: &'a str,
+}
+
+#[derive(Deserialize)]
+struct ChatCompletionResponse {
+    choices: Vec<ChatChoice>,
+}
+
+#[derive(Deserialize)]
+struct ChatChoice {
+    message: ChatChoiceMessage,
+}
+
+#[derive(Deserialize)]
+struct ChatChoiceMessage {
+    content: String,
+}
+
 pub async fn transcribe(
     audio_data: Vec<u8>,
     language: &str,
@@ -201,6 +296,15 @@ mod tests {
     fn rejects_hallucination_on_silent_recording() {
         assert!(!should_insert_transcript("const foo = bar", 120, 0.001));
         assert!(!should_insert_transcript("Vielen Dank.", 120, 0.001));
+    }
+
+    #[test]
+    fn detects_translate_language_modes() {
+        assert!(is_translate_language("de-en"));
+        assert!(is_translate_language("DE-EN"));
+        assert!(is_translate_language("de_en"));
+        assert!(!is_translate_language("de"));
+        assert!(!is_translate_language("auto"));
     }
 }
 

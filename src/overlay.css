@@ -114,6 +114,24 @@ body {
   color: #bfdbfe;
 }
 
+.stage.error .pill {
+  border-color: rgba(248, 113, 113, 0.45);
+  box-shadow:
+    0 8px 28px rgba(0, 0, 0, 0.45),
+    0 0 0 1px rgba(239, 68, 68, 0.2);
+}
+
+.stage.error .waveform {
+  display: none;
+}
+
+.stage.error .status {
+  color: #fecaca;
+  max-width: 190px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
 @keyframes wave {
   0%,
   100% {

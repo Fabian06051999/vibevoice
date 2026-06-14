@@ -1,51 +1,23 @@
-# <img src="src/assets/logo.svg" width="32" height="32" alt="Vibe Voice logo" /> Vibe Voice
+# <img src="src/assets/logo.svg" width="32" height="32" alt="logo" /> Vibe Voice
 
-### Free Windows voice-to-text for vibe coding — talk to Cursor, Claude & ChatGPT
+### Talk to your AI coding agent. Literally.
 
-**Vibe Voice** is a free, open-source **push-to-talk voice-to-text** desktop app for **Windows 10/11**, built for **vibe coding** and AI-assisted development. Hold a hotkey, speak your next prompt, and the transcript is pasted exactly where your cursor is — in **Cursor**, **Composer**, **ChatGPT**, **Claude**, VS Code, or any text field.
+**Vibe Voice** is a prompt-first voice-to-text tool built for vibe coding. Hold a hotkey, speak your next instruction, and watch it appear exactly where your cursor is — ready for Cursor, Composer, ChatGPT, Claude, or any AI coding workflow.
 
-No modes. No context guessing. Just fast, accurate **speech-to-text for coding prompts**.
+No modes. No context guessing. Just fast, accurate prompts.
 
-[![Vibe Voice — free push-to-talk voice-to-text for vibe coding on Windows](src/assets/promo-banner.png)](https://github.com/Fabian06051999/vibevoice/releases)
+[![Vibe Voice — free voice-to-text for vibe coding on Windows](src/assets/promo-banner.png)](https://github.com/Fabian06051999/vibevoice/releases)
 
-![Release](https://img.shields.io/github/v/release/Fabian06051999/vibevoice?label=release)
 ![Windows](https://img.shields.io/badge/platform-Windows_10%2F11-0078D4?logo=windows&logoColor=white)
 ![Tauri 2](https://img.shields.io/badge/built_with-Tauri_2.0-7C3AED?logo=tauri&logoColor=white)
-![Groq Whisper](https://img.shields.io/badge/powered_by-Groq_Whisper-F55036)
+![Groq](https://img.shields.io/badge/powered_by-Groq_Whisper-F55036)
 ![License](https://img.shields.io/badge/license-MIT-green)
-
-**Keywords:** voice to text Windows · speech to text for coding · push-to-talk dictation · Whisper Groq · Cursor voice input · AI coding prompts · Tauri Rust desktop app
-
----
-
-## Table of contents
-
-- [Why Vibe Voice?](#why-vibe-voice)
-- [Features](#features)
-- [How it works](#how-it-works)
-- [Prompt-first by design](#prompt-first-by-design)
-- [Install (Windows)](#install-windows)
-- [Build from source](#build-from-source)
-- [Recording modes](#recording-modes)
-- [Tech stack](#tech-stack)
-- [Project structure](#project-structure)
-- [Configuration](#configuration)
-- [FAQ](#faq)
-- [Contributing](#contributing)
-- [License](#license)
 
 ---
 
 ## Why Vibe Voice?
 
-Every vibe coder knows the pain: you're in the zone, your AI agent is building your app, and you need to type the next instruction — but typing breaks your flow. Most **Windows dictation tools** are built for emails and documents, not for **AI coding workflows**. Vibe Voice fills that gap.
-
-**Perfect if you want:**
-
-- **Voice input for Cursor / Claude / ChatGPT** without switching apps
-- A lightweight **Windows speech-to-text** tool that stays out of the way
-- **Push-to-talk** control instead of always-on microphone listening
-- Fast transcription via **Groq Whisper** (typically under 2 seconds)
+Every vibe coder knows the pain: you're in the zone, your AI agent is building your app, and you need to type the next instruction — but typing breaks your flow.
 
 **Vibe Voice keeps the loop moving.**
 
@@ -242,34 +214,6 @@ Settings are stored in `%APPDATA%\vibe-voice-tool\config.json` — never in the 
 ```
 
 You must bring your own Groq API key. The app never ships with one, and your saved key stays local on your machine.
-
----
-
-## FAQ
-
-### Is Vibe Voice free?
-
-Yes. Vibe Voice is **MIT-licensed** and free to download. You only need your own **Groq API key** ([free tier available](https://console.groq.com/keys)) for transcription.
-
-### Does it work with Cursor, Claude, and ChatGPT?
-
-Yes. Vibe Voice pastes text at your **current cursor position** in any Windows app — including Cursor, VS Code, browsers, terminals, and chat UIs.
-
-### How is this different from Windows Voice Typing?
-
-Windows Voice Typing is system-wide dictation. Vibe Voice is **prompt-first**: optimized for short, precise **AI agent instructions**, with push-to-talk, a minimal overlay, and a vocabulary tuned for dev terms (refactors, tests, Composer, agents, etc.).
-
-### Does it run locally or in the cloud?
-
-Audio is sent to the **Groq Whisper API** for transcription. The app itself is a local **Tauri + Rust** desktop program; your API key stays in `%APPDATA%` on your machine.
-
-### Which languages are supported?
-
-Whisper **auto-detects** your spoken language. You can also pin a language manually in Settings. Installers are available in **English** and **German**.
-
-### Can I use it without Cursor?
-
-Absolutely. Any app with a text cursor works — IDEs, browsers, Slack, Notion, terminal prompts, and more.
 
 ---
 

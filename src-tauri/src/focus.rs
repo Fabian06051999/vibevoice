@@ -13,9 +13,9 @@ static TARGET_HWND: AtomicIsize = AtomicIsize::new(0);
 pub enum InjectMethod {
     /// Windows Terminal, cmd, PowerShell conhost
     ShiftInsertPaste,
-    /// Cursor, VS Code, browsers, most editors
+    /// Browsers, most editors
     CtrlVPaste,
-    /// Direct keystrokes — works when terminal panel keeps focus
+    /// Direct keystrokes — works reliably in Cursor / VS Code
     UnicodeType,
 }
 

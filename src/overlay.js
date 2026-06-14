@@ -30,12 +30,26 @@ function showTranscribing() {
 }
 
 function hideOverlay() {
-  stage.classList.remove("visible", "transcribing", "locked");
+  stage.classList.remove("visible", "transcribing", "locked", "error");
   lockBadge.hidden = true;
   statusText.textContent = "Prompt";
+}
+
+let errorTimer = null;
+
+function showError(message) {
+  stage.classList.add("visible", "error");
+  stage.classList.remove("transcribing", "locked");
+  lockBadge.hidden = true;
+  statusText.textContent = message;
+  clearTimeout(errorTimer);
+  errorTimer = setTimeout(hideOverlay, 2800);
 }
 
 listen("recording-start", showRecording);
 listen("recording-locked", showLocked);
 listen("transcribing", showTranscribing);
 listen("overlay-hide", hideOverlay);
+listen("pipeline-error", (event) => {
+  showError(event.payload ?? "Something went wrong");
+});

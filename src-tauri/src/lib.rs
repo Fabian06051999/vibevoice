@@ -140,21 +140,28 @@ fn hide_overlay(app: &AppHandle) {
     }
 }
 
+fn emit_pipeline_error(app: &AppHandle, message: &str) {
+    eprintln!("{message}");
+    let _ = app.emit("pipeline-error", message.to_string());
+}
+
 async fn process_recording(app: AppHandle) {
     let recording = {
         let state = app.state::<AppState>();
         match state.audio.stop_recording() {
             Ok(recording) => recording,
             Err(error) => {
-                eprintln!("Stop recording failed: {error}");
-                hide_overlay(&app);
+                emit_pipeline_error(&app, &format!("Stop recording failed: {error}"));
                 return;
             }
         }
     };
 
     if !recording.has_speech() {
-        hide_overlay(&app);
+        emit_pipeline_error(
+            &app,
+            "No speech detected. Hold Ctrl+Win longer and speak closer to the mic.",
+        );
         return;
     }
 
@@ -164,12 +171,17 @@ async fn process_recording(app: AppHandle) {
 
     let config = app.state::<AppState>().config.lock().unwrap().clone();
     if config.api_key.is_empty() {
-        eprintln!("No Groq API key configured");
-        hide_overlay(&app);
+        emit_pipeline_error(&app, "No Groq API key configured. Open Settings from the tray.");
         return;
     }
 
-    match transcription::transcribe(wav_data, &config.language, &config.api_key).await {
+    let transcription_result = if transcription::is_translate_language(&config.language) {
+        transcription::translate(wav_data, &config.api_key).await
+    } else {
+        transcription::transcribe(wav_data, &config.language, &config.api_key).await
+    };
+
+    match transcription_result {
         Ok(text) => {
             let text = format_transcript(&text);
             if transcription::should_insert_transcript(&text, duration_ms, rms) {
@@ -181,18 +193,21 @@ async fn process_recording(app: AppHandle) {
                     let result = clipboard::inject_text(&text_to_insert);
                     let _ = tx.send(result);
                 }) {
-                    eprintln!("Failed to schedule paste: {error}");
+                    emit_pipeline_error(&app, &format!("Failed to schedule paste: {error}"));
                 } else if let Ok(result) = rx.recv() {
                     if let Err(error) = result {
-                        eprintln!("Text injection failed: {error}");
+                        emit_pipeline_error(&app, &format!("Text injection failed: {error}"));
                     }
                 }
+            } else {
+                emit_pipeline_error(
+                    &app,
+                    "Speech was filtered. Try speaking a full sentence for at least half a second.",
+                );
             }
         }
-        Err(error) => eprintln!("Transcription failed: {error}"),
+        Err(error) => emit_pipeline_error(&app, &format!("Transcription failed: {error}")),
     }
-
-    hide_overlay(&app);
 }
 
 #[cfg_attr(mobile, tauri::mobile_entry_point)]

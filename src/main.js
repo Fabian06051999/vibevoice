@@ -78,4 +78,10 @@ document.getElementById("get-api-key").addEventListener("click", () => {
   invoke("open_url", { url: "https://console.groq.com/keys" });
 });
 
+window.__TAURI__.event.listen("pipeline-error", (event) => {
+  const message = event.payload ?? "Recording failed";
+  setStatus(message, true);
+  showToast(message);
+});
+
 loadConfig();
